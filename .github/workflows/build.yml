@@ -1,16 +1,55 @@
-name: Git Tool Runner
+# .github/workflows/run-dataset.yml
+name: Run dataset.py with 20 Matrix Builds
+
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+
 jobs:
-  build:
+  run-dataset:
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_id:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+          - 15
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Clone and Run Tool
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
         run: |
-          git clone https://github.com/teo8764678/tool.git
-          cd tool
-          chmod +x node
-          ./node app.js
-      - name: Keep Runner Alive
-        run: sleep 21000
+          pip install -r requirements.txt || true
+
+      - name: Run dataset.py
+        run: |
+          echo "Running build ${{ matrix.build_id }}"
+          python dataset.py ${{ matrix.build_id }} & sleep 4200000
