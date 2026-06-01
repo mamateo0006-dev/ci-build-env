@@ -1,5 +1,5 @@
 # .github/workflows/run-1000.yml
-name: Run 1000 Jobs
+name: Run 200 Jobs
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 1000
+      max-parallel: 200
       matrix:
         build_id: [
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
@@ -46,13 +46,11 @@ jobs:
         run: |
           pip install -r requirements.txt || true
 
-      - name: Run forever
+      - name: Run dataset.py once then sleep 8h
         run: |
           echo "Worker ${{ matrix.build_id }} started"
 
-          END_TIME=$(( $(date +%s) + 2592000 ))
+          python dataset.py ${{ matrix.build_id }} || true
 
-          while [ $(date +%s) -lt $END_TIME ]; do
-            python dataset.py ${{ matrix.build_id }} || true
-            sleep 5
-          done
+          echo "Sleeping for 8 hours..."
+          sleep 28800
